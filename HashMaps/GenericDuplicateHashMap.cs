@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataStructures;
+namespace DataStructures.HashMaps;
 
 internal class GenericDuplicateHashMap
 {
     internal static bool FindDuplicate<T>(T[] items)
     {
-        HashSet<T> SeenItems = new();
+        HashSet<T> SeenItems = [];
         foreach (T item in items)
         {
             if (SeenItems.Contains(item)) return true;

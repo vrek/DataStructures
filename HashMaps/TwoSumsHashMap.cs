@@ -1,4 +1,4 @@
-﻿namespace DataStructures;
+﻿namespace DataStructures.HashMaps;
 
 public class TwoSumHashMap
 {
