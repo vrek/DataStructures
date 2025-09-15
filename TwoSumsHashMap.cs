@@ -19,11 +19,11 @@
                 }
                 index++;
             }
-            return new int[] { -1, -1 };
+            return new int[] {};
         }
     }
 
-    public class TwoSumHashMapTests
+    public class TwoSumHashMapPassingTests
     {
         [Theory]
         [InlineData(new int[] { 2, 7, 11, 15 }, 9, new int[] { 0, 1 })]
@@ -35,6 +35,20 @@
         {
             int[] result = TwoSumHashMap.TwoSum(nums, target);
             Assert.Equal(expected, result);
+        }
+    }
+
+    public class TwoSumHashMapFailingTests
+    {
+        [Theory]
+        [InlineData(new int[] { 1, 2, 3 }, 10)]
+        [InlineData(new int[] { 5, 5, 5 }, 20)]
+        [InlineData(new int[] { }, 0)]
+        [InlineData(new int[] { 0 }, 1)]
+        public void GivenInvalidTargetFunctionShouldReturnNull(int[] nums, int target)
+        {
+            int[] result = TwoSumHashMap.TwoSum(nums, target);
+            Assert.Empty(result);
         }
     }
 }
