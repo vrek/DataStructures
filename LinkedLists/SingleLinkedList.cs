@@ -155,23 +155,21 @@ public class GetValueAtPositionTests
     public static class InvalidPositionTestData
     {
         public static IEnumerable<object[]> Cases =>
-            new List<object[]>
-            {
-            new object[] { -1 },  // Negative index
-            new object[] { 3 },   // Equal to length (out of bounds)
-            new object[] { 100 }, // Far beyond length
-            };
+            [
+            [-1],  // Negative index
+            [3],   // Equal to length (out of bounds)
+            [100], // Far beyond length
+            ];
     }
 
     public static class ValidPositionTestData
     {
         public static IEnumerable<object[]> Cases =>
-            new List<object[]>
-            {
-            new object[] { 0, 1 }, // Head
-            new object[] { 1, 2 }, // Middle
-            new object[] { 2, 3 }, // Tail
-            };
+            [
+            [0, 1], // Head
+            [1, 2], // Middle
+            [2, 3], // Tail
+            ];
     }
 
 
@@ -179,7 +177,7 @@ public class GetValueAtPositionTests
     [MemberData(nameof(ValidPositionTestData.Cases), MemberType = typeof(ValidPositionTestData))]
     public void GetValueAtPosition_ShouldReturnCorrectValue(int position, int expectedValue)
     {
-        var list = new SingleLinkedList();
+        SingleLinkedList list = new();
         list.InsertAtEnd(1);
         list.InsertAtEnd(2);
         list.InsertAtEnd(3); // List: 1 → 2 → 3
@@ -192,7 +190,7 @@ public class GetValueAtPositionTests
     [MemberData(nameof(InvalidPositionTestData.Cases), MemberType = typeof(InvalidPositionTestData))]
     public void GetValueAt_InvalidPosition_ShouldThrowArgumentOutOfRangeException(int invalidPosition)
     {
-        var list = new SingleLinkedList();
+        SingleLinkedList list = new();
         list.InsertAtStart(3);
         list.InsertAtStart(2);
         list.InsertAtStart(1); // List: 1 → 2 → 3
@@ -202,7 +200,8 @@ public class GetValueAtPositionTests
 
     [Fact]
         public void GetValueAtPosition_EmptyList_ShouldThrowArgumentOutOfRangeException()
-    {     var list = new SingleLinkedList();
+    {
+        SingleLinkedList list = new();
         Assert.Throws<ArgumentOutOfRangeException>(() => list.GetValueAtPosition(0));
     }
 }
