@@ -14,7 +14,7 @@ internal class BinarySearch
         int right = nums.Length - 1;
         int count = 1;
 
-        int[] SortedNums = nums.OrderBy(n => n).ToArray();
+        int[] SortedNums = [.. nums.OrderBy(n => n)];
 
         while (left <= right)
         {
