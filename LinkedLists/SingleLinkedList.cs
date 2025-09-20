@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DataStructures.LinkedLists;
+﻿namespace DataStructures.LinkedLists;
 
 internal class SingleLinkedList
 {
@@ -15,7 +9,7 @@ internal class SingleLinkedList
     }
 
     public Node? Head;
-    
+
     public SingleLinkedList()
     {
         Head = null;
@@ -57,7 +51,7 @@ internal class SingleLinkedList
         }
         if (position > GetLength() || position < 0)
             throw new ArgumentOutOfRangeException(nameof(position), "Position is out of bounds.");
-        Node current = Head;
+        Node? current = Head;
         for (int i = 0; i < position - 1; i++)
         {
             current = current.Next;
@@ -69,7 +63,7 @@ internal class SingleLinkedList
     public int[] ToArray()
     {
         List<int> values = [];
-        Node current = Head;
+        Node? current = Head;
         while (current != null)
         {
             values.Add(current.Value);
@@ -94,7 +88,7 @@ internal class SingleLinkedList
     {
         if (position < 0 || position >= GetLength())
             throw new ArgumentOutOfRangeException(nameof(position), "Position is out of bounds.");
-        Node current = Head;
+        Node? current = Head;
         for (int i = 0; i < position; i++)
         {
             current = current.Next;
@@ -111,12 +105,41 @@ internal class SingleLinkedList
             Head = Head.Next;
             return;
         }
-        Node current = Head;
+        Node? current = Head;
         for (int i = 0; i < position - 1; i++)
         {
             current = current.Next;
         }
         current.Next = current.Next.Next;
+    }
+
+    public Node? FindNodeByValue(int v)
+    {
+        Node current = Head;
+        while (current != null)
+        {
+            if (current.Value == v)
+            {
+                return current;
+            }
+            current = current.Next;
+        }
+        return null;
+    }
+
+    public List<Node> FindAllNodesByValue(int v)
+    {
+        Node current = Head;
+        List<Node> nodes = [];
+        while (current != null)
+        {
+            if (current.Value == v)
+            {
+                nodes.Add(current);
+            }
+            current = current.Next;
+        }
+        return nodes;
     }
 }
 
@@ -152,25 +175,27 @@ public class RemoveAtPositionTests
 
 public class GetValueAtPositionTests
 {
-    public static class InvalidPositionTestData
+    public class InvalidPositionTestData
     {
-        public static IEnumerable<object[]> Cases =>
-            [
-            [-1],  // Negative index
-            [3],   // Equal to length (out of bounds)
-            [100], // Far beyond length
-            ];
+        public static TheoryData<int> Cases =>
+    [
+        -1,    // Negative index
+        3,     // Equal to list length (out of bounds)
+        100    // Way out of bounds
+    ];
     }
+
 
     public static class ValidPositionTestData
     {
-        public static IEnumerable<object[]> Cases =>
-            [
-            [0, 1], // Head
-            [1, 2], // Middle
-            [2, 3], // Tail
-            ];
+        public static TheoryData<int, int> Cases => new()
+        {
+            { 0, 1 }, // Head
+            { 1, 2 }, // Middle
+            { 2, 3 }, // Tail
+        };
     }
+
 
 
     [Theory]
@@ -199,12 +224,13 @@ public class GetValueAtPositionTests
     }
 
     [Fact]
-        public void GetValueAtPosition_EmptyList_ShouldThrowArgumentOutOfRangeException()
+    public void GetValueAtPosition_EmptyList_ShouldThrowArgumentOutOfRangeException()
     {
         SingleLinkedList list = new();
         Assert.Throws<ArgumentOutOfRangeException>(() => list.GetValueAtPosition(0));
     }
 }
+
 public class InsertAtStartTests
 {
     [Fact]
@@ -433,7 +459,7 @@ public class ToArrayTests
     }
 }
 
-public class InsertAtEndTests 
+public class InsertAtEndTests
 {
     [Fact]
     public void InsertAtEnd_SingleValue_ShouldCreateSingleNode()
@@ -494,16 +520,117 @@ public class InsertAtEndTests
     }
 }
 
+public class FindNodeWithValueTests
+{
+    [Fact]
+    public void FindNodeByValue_ReturnsCorrectNode_WhenValueExists()
+    {
+        SingleLinkedList list = new();
+        list.InsertAtEnd(10);
+        list.InsertAtEnd(20);
+        list.InsertAtEnd(30);
 
+        var result = list.FindNodeByValue(20);
+
+        Assert.NotNull(result);
+        Assert.Equal(20, result.Value);
+    }
+
+    [Fact]
+    public void FindNodeByValue_ReturnsNull_WhenValueDoesNotExist()
+    {
+        SingleLinkedList list = new();
+        list.InsertAtEnd(10);
+        list.InsertAtEnd(20);
+
+        var result = list.FindNodeByValue(99);
+
+        Assert.Null(result);
+    }
+
+    [Fact]
+    public void FindNodeByValue_ReturnsFirstMatch_WhenDuplicatesExist()
+    {
+        SingleLinkedList list = new();
+        list.InsertAtEnd(5);
+        list.InsertAtEnd(10);
+        list.InsertAtEnd(10);
+        list.InsertAtEnd(15);
+
+        var result = list.FindNodeByValue(10);
+
+        Assert.NotNull(result);
+        Assert.Equal(10, result.Value);
+        Assert.Equal(10, result.Next.Value); // Confirms it's the first 10
+    }
+
+}
+
+public class FindAllNodesWithValueTests
+{
+    [Fact]
+    public void FindAllNodesByValue_ReturnsEmptyList_WhenListIsEmpty()
+    {
+        SingleLinkedList? list = new();
+        var result = list.FindAllNodesByValue(10);
+
+        Assert.Empty(result);
+    }
+
+    [Fact]
+    public void FindAllNodesByValue_ReturnsSingleMatch_WhenValueExistsOnce()
+    {
+        SingleLinkedList list = new();
+        list.InsertAtEnd(5);
+        list.InsertAtEnd(10);
+        list.InsertAtEnd(15);
+
+        var result = list.FindAllNodesByValue(10);
+
+        Assert.Single(result);
+        Assert.Equal(10, result[0].Value);
+    }
+
+    [Fact]
+    public void FindAllNodesByValue_ReturnsMultipleMatches_WhenValueExistsMultipleTimes()
+    {
+        SingleLinkedList list = new();
+        list.InsertAtEnd(10);
+        list.InsertAtEnd(20);
+        list.InsertAtEnd(10);
+        list.InsertAtEnd(30);
+        list.InsertAtEnd(10);
+
+        var result = list.FindAllNodesByValue(10);
+
+        Assert.Equal(3, result.Count);
+        Assert.All(result, node => Assert.Equal(10, node.Value));
+    }
+
+    [Fact]
+    public void FindAllNodesByValue_ReturnsEmptyList_WhenValueNotFound()
+    {
+        SingleLinkedList list = new();
+        list.InsertAtEnd(1);
+        list.InsertAtEnd(2);
+        list.InsertAtEnd(3);
+
+        var result = list.FindAllNodesByValue(99);
+
+        Assert.Empty(result);
+    }
+
+}
 public static class LinkedListLengthTestData
 {
-    public static IEnumerable<object[]> Cases =>
-        [
-            [Array.Empty<int>(), 0],
-            [new int[] { 42 }, 1],
-            [new int[] { 1, 2, 3 }, 3],
-            [Enumerable.Range(1, 10).ToArray(), 10],
-            [Enumerable.Range(1, 100).ToArray(), 100],
-        ];
+    public static TheoryData<int[], int> Cases => new()
+{
+    { Array.Empty<int>(), 0 },
+    { new[] { 42 }, 1 },
+    { new[] { 1, 2, 3 }, 3 },
+    { Enumerable.Range(1, 10).ToArray(), 10 },
+    { Enumerable.Range(1, 100).ToArray(), 100 }
+};
+
 }
 
